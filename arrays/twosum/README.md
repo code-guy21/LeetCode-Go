@@ -10,11 +10,9 @@ Given an array of integers `nums` and an integer `target`, return indices of the
 - You may not use the same element twice
 - Return the answer in any order
 
-## Approach 1: Hash Map (Optimal)
+## Solution Implementations
 
-### Time Complexity: O(n)
-
-### Space Complexity: O(n)
+### 1. Hash Map Solution (Original)
 
 ```go
 func twoSum(nums []int, target int) []int {
@@ -29,46 +27,15 @@ func twoSum(nums []int, target int) []int {
 }
 ```
 
-### Step-by-Step Explanation:
-
-1. Create a hash map to store numbers we've seen and their indices
-2. For each number:
-   - Check if its complement (target - current number) exists in the map
-   - If found, return current index and stored index
-   - If not found, store current number and index
-3. Return nil if no solution found
-
-### Performance Analysis:
-
-- Single pass through the array
-- Constant-time lookups in hash map
-- Space grows linearly with input size
-
-## Approach 2: Two Pointers (Requires Sorting)
-
-### Time Complexity: O(n log n)
-
-### Space Complexity: O(1)
+### 2. Sorted Array Solution
 
 ```go
-func twoSumSorted(nums []int, target int) []int {
-    // Create index pairs to track original indices
-    pairs := make([][2]int, len(nums))
-    for i, num := range nums {
-        pairs[i] = [2]int{num, i}
-    }
-
-    // Sort by values
-    sort.Slice(pairs, func(i, j int) bool {
-        return pairs[i][0] < pairs[j][0]
-    })
-
-    // Two pointers approach
-    left, right := 0, len(nums)-1
+func twoSumSorted(numbers []int, target int) []int {
+    left, right := 0, len(numbers)-1
     for left < right {
-        sum := pairs[left][0] + pairs[right][0]
+        sum := numbers[left] + numbers[right]
         if sum == target {
-            return []int{pairs[left][1], pairs[right][1]}
+            return []int{left + 1, right + 1}
         }
         if sum < target {
             left++
@@ -80,67 +47,110 @@ func twoSumSorted(nums []int, target int) []int {
 }
 ```
 
-### Benchmarks
+### 3. Memory Optimized Solution
 
 ```go
-func BenchmarkTwoSum(b *testing.B) {
-    nums := []int{2, 7, 11, 15}
-    target := 9
-    for i := 0; i < b.N; i++ {
-        twoSum(nums, target)
+func twoSumMinSpace(nums []int, target int) []int {
+    // Initialize an empty map to store number and its index
+    numMap := make(map[int]int)
+    for i, num := range nums {
+        complement := target - num
+        if j, exists := numMap[complement]; exists {
+            result := []int{j, i}
+            sort.Ints(result)
+            return result
+        }
+        numMap[num] = i
     }
+    return nil
 }
 ```
 
-## Edge Cases:
+## Time & Space Complexity
+
+### Hash Map Solution (Original)
+
+- Time Complexity: O(n)
+- Space Complexity: O(n)
+
+### Sorted Array Solution
+
+- Time Complexity: O(n log n) due to sorting
+- Space Complexity: O(1)
+
+### Memory Optimized Solution
+
+- Time Complexity: O(n log n)
+- Space Complexity: O(n)
+
+## Running Tests
+
+### Basic Tests
+
+```bash
+# Run all tests
+go test
+
+# Run tests with verbose output
+go test -v
+```
+
+### Run Specific Tests
+
+```bash
+# Run only TwoSum tests
+go test -run TestTwoSum
+
+# Run only variation tests
+go test -run TestTwoSumVariations
+```
+
+### Performance Benchmarks
+
+```bash
+# Run all benchmarks
+go test -bench=.
+
+# Run benchmarks with memory allocation statistics
+go test -bench=. -benchmem
+
+# Run specific benchmark
+go test -bench=BenchmarkTwoSum
+```
+
+## Test Files Structure
+
+```
+twosum/
+├── solution.go        # Original solution
+├── solution_test.go   # Original tests
+├── variations.go      # Additional implementations
+└── variations_test.go # Tests for variations
+```
+
+## Edge Cases Covered
 
 - Empty array
 - Array with only one element
 - Negative numbers
-- Multiple valid pairs (problem guarantees unique solution)
-- No valid solution
+- Duplicate numbers
+- Target sum with same number
 
-## Test Cases:
-
-```go
-func TestTwoSum(t *testing.T) {
-    tests := []struct {
-        nums   []int
-        target int
-        want   []int
-    }{
-        {[]int{2, 7, 11, 15}, 9, []int{0, 1}},
-        {[]int{3, 2, 4}, 6, []int{1, 2}},
-        {[]int{3, 3}, 6, []int{0, 1}},
-        {[]int{1}, 1, nil},
-        {[]int{}, 0, nil},
-    }
-
-    for _, tt := range tests {
-        got := twoSum(tt.nums, tt.target)
-        if !reflect.DeepEqual(got, tt.want) {
-            t.Errorf("twoSum(%v, %v) = %v, want %v",
-                     tt.nums, tt.target, got, tt.want)
-        }
-    }
-}
-```
-
-## Interview Tips:
+## Interview Tips
 
 1. Always clarify constraints first
 2. Discuss brute force approach before optimization
 3. Explain space-time trade-offs
 4. Consider follow-up questions about scaling or constraints
 
-## Common Patterns Used:
+## Common Patterns Used
 
-- Hash Table
-- Two Pointers (sorted variant)
-- Array Traversal
+- Hash Table: For quick lookups to find complements.
+- Two Pointers (Sorted Variant): Efficiently finding pairs in a sorted array.
+- Array Traversal: Iterating through the array to process elements.
 
-## Related Problems:
+## Related Problems
 
-- Three Sum
-- Two Sum II (sorted array)
-- Two Sum III (data structure design)
+- Three Sum: Find three numbers in an array that add up to a target.
+- Two Sum II (sorted array): Similar to Two Sum but the input array is already sorted.
+- Two Sum III (data structure design): Design a data structure that supports adding numbers and finding pairs that sum to a target.
