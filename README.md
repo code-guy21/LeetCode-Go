@@ -12,3 +12,4 @@ Daily solutions and explanations for LeetCode problems.
 
 - [x] Two Sum (Day 1)
 - [x] Valid Anagram (Day 2)
+- [x] Contains Duplicate (Day 3)
