@@ -1,7 +1,7 @@
 package containsduplicate
 
 func containsDuplicate(nums []int) bool {
-	seen := make(map[int]struct{})
+    seen := make(map[int]struct{})
 
     for _, num := range nums {
         if _, exists := seen[num]; exists {
